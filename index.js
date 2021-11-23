@@ -11,7 +11,20 @@ app.use(express.static('public'));
 // run when client connects
 
 io.on('connection', (socket) => {
-	console.log('New user connected');
+	// welcome current user
+	socket.emit('message', 'Welcome to the chatRoom app');
+	// broadcast when a user connects
+	socket.broadcast.emit('message', 'A new user has joined the chatRoom');
+
+	// runs when client disconnects
+	socket.on('disconnect', () => {
+		io.emit('message', 'A user has left the chatRoom');
+	});
+
+	// listen for chat message
+	socket.on('chatMessage', (msg) => {
+		io.emit('message', msg);
+	});
 });
 
 server.listen(PORT, () => {
